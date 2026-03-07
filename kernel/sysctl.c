@@ -157,23 +157,7 @@ static int minolduid;
 static int ngroups_max = NGROUPS_MAX;
 static const int cap_last_cap = CAP_LAST_CAP;
 
-#ifdef CONFIG_SCHED_BORE
-extern uint sched_bore;
-extern uint sched_burst_score_rounding;
-extern uint sched_burst_smoothness_long;
-extern uint sched_burst_smoothness_short;
-extern uint sched_burst_fork_atavistic;
-extern uint sched_burst_penalty_offset;
-extern uint sched_burst_penalty_scale;
-extern uint sched_burst_cache_lifetime;
-static int __maybe_unused seven          = 7;
-static int __maybe_unused sixty_four     = 64;
-static int __maybe_unused maxval_12_bits = 4095;
-#endif // CONFIG_SCHED_BORE
-
-/*
- * this is needed for proc_doulongvec_minmax of sysctl_hung_task_timeout_secs
- */
+/*this is needed for proc_doulongvec_minmax of sysctl_hung_task_timeout_secs */
 #ifdef CONFIG_DETECT_HUNG_TASK
 static unsigned long hung_task_timeout_max = (LONG_MAX/HZ);
 #endif
@@ -372,7 +356,7 @@ int dummy_sched_boost_handler(struct ctl_table *table, int write,
 
 static struct ctl_table kern_table[] = {
 	{
-		.procname	= "sched_child_runs_first_nosys",
+		.procname	= "sched_child_runs_first",
 		.data		= &sysctl_sched_child_runs_first,
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
@@ -488,14 +472,14 @@ static struct ctl_table kern_table[] = {
 	},
 #endif
 	{
-		.procname	= "sched_upmigrate_nosys",
+		.procname	= "sched_upmigrate",
 		.data		= &sysctl_sched_capacity_margin_up,
 		.maxlen		= sizeof(unsigned int) * MAX_MARGIN_LEVELS,
 		.mode		= 0644,
 		.proc_handler	= sched_updown_migrate_handler,
 	},
 	{
-		.procname	= "sched_downmigrate_nosys",
+		.procname	= "sched_downmigrate",
 		.data		= &sysctl_sched_capacity_margin_down,
 		.maxlen		= sizeof(unsigned int) * MAX_MARGIN_LEVELS,
 		.mode		= 0644,
@@ -1429,78 +1413,6 @@ static struct ctl_table kern_table[] = {
 		.extra2		= &one_thousand,
 	},
 #endif
-#ifdef CONFIG_SCHED_BORE
-	{
-		.procname	= "sched_bore",
-		.data		= &sched_bore,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= &proc_douintvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &one,
-	},
-	{
-		.procname	= "sched_burst_cache_lifetime",
-		.data		= &sched_burst_cache_lifetime,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler = proc_douintvec,
-	},
-	{
-		.procname	= "sched_burst_fork_atavistic",
-		.data		= &sched_burst_fork_atavistic,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= &proc_douintvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &seven,
-	},
-	{
-		.procname	= "sched_burst_penalty_offset",
-		.data		= &sched_burst_penalty_offset,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= &proc_douintvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &sixty_four,
-	},
-	{
-		.procname	= "sched_burst_penalty_scale",
-		.data		= &sched_burst_penalty_scale,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= &proc_douintvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &maxval_12_bits,
-	},
-	{
-		.procname	= "sched_burst_score_rounding",
-		.data		= &sched_burst_score_rounding,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= &proc_douintvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &one,
-	},
-	{
-		.procname	= "sched_burst_smoothness_long",
-		.data		= &sched_burst_smoothness_long,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= &proc_douintvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &one,
-	},
-	{
-		.procname	= "sched_burst_smoothness_short",
-		.data		= &sched_burst_smoothness_short,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= &proc_douintvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &one,
-	},
-#endif // CONFIG_SCHED_BORE
 	{
 		.procname	= "panic_on_warn",
 		.data		= &panic_on_warn,
@@ -1626,7 +1538,7 @@ static struct ctl_table vm_table[] = {
 		.extra1		= &zero,
 	},
 	{
-		.procname	= "dirty_background_ratio_nosys",
+		.procname	= "dirty_background_ratio",
 		.data		= &dirty_background_ratio,
 		.maxlen		= sizeof(dirty_background_ratio),
 		.mode		= 0644,
@@ -1667,7 +1579,7 @@ static struct ctl_table vm_table[] = {
 		.proc_handler	= dirty_writeback_centisecs_handler,
 	},
 	{
-		.procname	= "dirty_expire_centisecs_nosys",
+		.procname	= "dirty_expire_centisecs",
 		.data		= &dirty_expire_interval,
 		.maxlen		= sizeof(dirty_expire_interval),
 		.mode		= 0644,
@@ -1688,7 +1600,7 @@ static struct ctl_table vm_table[] = {
 		.proc_handler   = pdflush_proc_obsolete,
 	},
 	{
-		.procname	= "swappiness_nosys",
+		.procname	= "swappiness",
 		.data		= &vm_swappiness,
 		.maxlen		= sizeof(vm_swappiness),
 		.mode		= 0644,
