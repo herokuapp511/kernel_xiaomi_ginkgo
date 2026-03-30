@@ -1,0 +1,55 @@
+name: Android Kernel Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source code
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # 2. Install dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            bc \
+            bison \
+            build-essential \
+            curl \
+            flex \
+            git \
+            libssl-dev \
+            libncurses-dev \
+            wget \
+            cpio \
+            python3
+
+      # 3. Set up environment (optional but useful)
+      - name: Setup environment
+        run: |
+          export ARCH=arm64
+          export SUBARCH=arm64
+
+      # 4. Run build script
+      - name: Build Kernel
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      # 5. Upload artifacts
+      - name: Upload Kernel Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-build
+          path: |
+            out/arch/arm64/boot/Image.gz
+            out/arch/arm64/boot/dtb
+            out/arch/arm64/boot/boot.img
