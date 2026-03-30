@@ -27,7 +27,7 @@ jobs:
       - name: Build Kernel
         run: |
           chmod +x build.sh
-          ./build.sh
+          ./build.sh --ksu
 
       # 4. Find ZIP file dynamically
       - name: Find ZIP
