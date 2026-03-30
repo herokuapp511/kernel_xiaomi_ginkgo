@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout source code
+      # 1. Checkout
       - name: Checkout source
         uses: actions/checkout@v4
 
@@ -20,36 +20,26 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            bc \
-            bison \
-            build-essential \
-            curl \
-            flex \
-            git \
-            libssl-dev \
-            libncurses-dev \
-            wget \
-            cpio \
-            python3
+            bc bison build-essential curl flex git \
+            libssl-dev libncurses-dev wget cpio python3 zip
 
-      # 3. Set up environment (optional but useful)
-      - name: Setup environment
-        run: |
-          export ARCH=arm64
-          export SUBARCH=arm64
-
-      # 4. Run build script
+      # 3. Build
       - name: Build Kernel
         run: |
           chmod +x build.sh
           ./build.sh
 
-      # 5. Upload artifacts
-      - name: Upload Kernel Artifacts
+      # 4. Find ZIP file dynamically
+      - name: Find ZIP
+        id: find_zip
+        run: |
+          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+          echo "ZIP_FILE=$ZIP_FILE" >> $GITHUB_ENV
+          echo "Found ZIP: $ZIP_FILE"
+
+      # 5. Upload ZIP
+      - name: Upload Kernel ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: kernel-build
-          path: |
-            out/arch/arm64/boot/Image.gz
-            out/arch/arm64/boot/dtb
-            out/arch/arm64/boot/boot.img
+          name: kernel-zip
+          path: ${{ env.ZIP_FILE }}
